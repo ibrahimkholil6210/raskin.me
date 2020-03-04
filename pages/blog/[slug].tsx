@@ -3,6 +3,7 @@ import Head from 'next/head';
 import matter from 'gray-matter';
 import styled from 'styled-components';
 import ReactMarkdown from 'react-markdown';
+import { Tina, TinaCMS } from 'tinacms';
 
 import Layout from '../../components/Layout';
 import Section from '../../components/Section';
@@ -69,33 +70,36 @@ const BlogTemplate: NextPage<BlogTemplateProps> = ({ result }) => {
   var converter = new Converter();
   
   var reactElement = converter.convert(markdownBody);
+  const cms = new TinaCMS({});
   return (
-    <Layout>
-      <Head>
-        <meta name="description" content="About me, my projects, and my blog"/>
-        <title>{frontmatter.title}</title>
-      </Head>
-      <Section>
-        <article className="mb-10 markdown">
-          <header>
-            <h1 className="text-5xl">{frontmatter.title}</h1>
-          </header>
-          <div className="mb-5 my-auto text-sm font-semibold text-neutral-400">
-              {reformatDate(frontmatter.date)}
+    <Tina cms={cms}>
+      <Layout>
+        <Head>
+          <meta name="description" content="About me, my projects, and my blog"/>
+          <title>{frontmatter.title}</title>
+        </Head>
+        <Section>
+          <article className="mb-10 markdown">
+            <header>
+              <h1 className="text-5xl">{frontmatter.title}</h1>
+            </header>
+            <div className="mb-5 my-auto text-sm font-semibold text-neutral-400">
+                {reformatDate(frontmatter.date)}
+              </div>
+            <div>
+              <ReactMarkdown 
+                source={markdownBody}
+                renderers={{
+                  blockquote: Blockquote,
+                  pre: Pre,
+                  list: OrderedList
+                }}
+              />
             </div>
-          <div>
-            <ReactMarkdown 
-              source={markdownBody}
-              renderers={{
-                blockquote: Blockquote,
-                pre: Pre,
-                list: OrderedList
-              }}
-            />
-          </div>
-        </article>
-      </Section>
-    </Layout>
+          </article>
+        </Section>
+      </Layout>
+    </Tina>
   )
 };
 

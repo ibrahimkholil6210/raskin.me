@@ -2,8 +2,6 @@ import App from 'next/app';
 import * as React from 'react';
 import '../styles/tailwind.css';
 
-import { Tina, TinaCMS } from 'tinacms';
-
 interface AppState {
   // state variables types go here
 }
@@ -28,11 +26,8 @@ class MyApp extends App<{}, {}, AppState> {
 
   render() {
     const { Component, pageProps } = this.props;
-    const cms = new TinaCMS({});
     return (
-      <Tina cms={cms}>
-        <Component {...pageProps} />
-      </Tina>
+      <Component {...pageProps} />
     );
   }
 }
