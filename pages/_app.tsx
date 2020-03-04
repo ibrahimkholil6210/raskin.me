@@ -2,11 +2,15 @@ import App from 'next/app';
 import * as React from 'react';
 import '../styles/tailwind.css';
 
+import { Tina, TinaCMS } from 'tinacms';
+
 interface AppState {
   // state variables types go here
 }
 
+
 class MyApp extends App<{}, {}, AppState> {
+
   componentDidMount() {
     //detect dark mode and enable tailwindcss-dark-mode
     const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
@@ -24,8 +28,11 @@ class MyApp extends App<{}, {}, AppState> {
 
   render() {
     const { Component, pageProps } = this.props;
+    const cms = new TinaCMS({});
     return (
-      <Component {...pageProps} />
+      <Tina cms={cms}>
+        <Component {...pageProps} />
+      </Tina>
     );
   }
 }
