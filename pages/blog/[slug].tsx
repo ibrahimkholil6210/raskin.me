@@ -4,14 +4,14 @@ import matter from 'gray-matter';
 import styled from 'styled-components';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Tina, TinaCMS } from 'tinacms';
-import Hyvor from '../../components/Hyvor';
+import { useLocalMarkdownForm } from 'next-tinacms-markdown';
 
 import Highlight from 'react-highlight';
 
 import Layout from '../../components/Layout';
 import Section from '../../components/Section';
 import Newsletter from '../../components/Newsletter';
+import Hyvor from '../../components/Hyvor';
 
 import { reformatDate } from '../blog';
 
@@ -20,12 +20,13 @@ import "../../styles/markdown.css";
 import "../../styles/nord.css";
 
 interface BlogTemplateProps {
-  result: BlogPost;
+  markdownFile: BlogPost;
 }
 
 interface BlogPost {
-  content: string;
-  data: Data;
+  fileRelativePath: string;
+  frontmatter: any;
+  markdownBody: string;
 }
 
 interface Data {
@@ -74,57 +75,63 @@ const CodeBlock: NextPage<CodeBlockProps> = ({ value }) => {
   )
 }
 
-const BlogTemplate: NextPage<BlogTemplateProps> = ({ result }) => {
+const BlogTemplate: NextPage<BlogTemplateProps> = ({ markdownFile }) => {
   // data from getInitialProps
-  const markdownBody = result.content
-  const frontmatter = result.data
+  // const markdownBody = result.content
+  // const frontmatter = result.data
 
-  var Converter = require('react-showdown').Converter;
-  var converter = new Converter();
-  
-  var reactElement = converter.convert(markdownBody);
-  const cms = new TinaCMS({});
+  const formOptions = {
+    label: 'Blog Post',
+    fields: [
+      { label: 'Title', name: 'frontmatter.title', component: 'text' },
+      {
+        name: 'markdownBody',
+        label: 'Blog Post Content',
+        component: 'markdown',
+      },
+    ],
+  }
+
+  const [data] = useLocalMarkdownForm(markdownFile, formOptions);
   return (
-    <Tina cms={cms}>
-      <Layout>
-        <Head>
-          {/* General tags */}
-          <meta name="description" content={frontmatter.subtitle}/>
-          <title>{frontmatter.title}</title>
-          {/* OpenGraph tags */}
-          <meta name="og:url" content={frontmatter.url} />
-          <meta name="og:title" content={frontmatter.title} />
-          <meta name="og:description" content={frontmatter.subtitle} />
-          <meta name="og:image" content={frontmatter.socialImage} />
-          <meta name="og:type" content="website" />
-          {/* Twitter Card tags */}
-          <meta name="twitter:title" content={frontmatter.title} />
-          <meta name="twitter:description" content={frontmatter.subtitle} />
-          <meta name="twitter:image" content={frontmatter.socialImage} />
-          <meta name="twitter:card" content="summary" />
-        </Head>
-        <Section>
-          <article className="mb-10 markdown">
-            <header>
-              <h1 className="text-5xl">{frontmatter.title}</h1>
-            </header>
-            <div className="mb-5 my-auto text-sm font-semibold text-neutral-400">
-                {reformatDate(frontmatter.date)}
-              </div>
-            <div>
-              <ReactMarkdown 
-                source={markdownBody}
-                renderers={{
-                  code: CodeBlock
-                }}
-              />
+    <Layout>
+      <Head>
+        {/* General tags */}
+        <meta name="description" content={data.frontmatter.subtitle}/>
+        <title>{data.frontmatter.title}</title>
+        {/* OpenGraph tags */}
+        <meta name="og:url" content={data.frontmatter.url} />
+        <meta name="og:title" content={data.frontmatter.title} />
+        <meta name="og:description" content={data.frontmatter.subtitle} />
+        <meta name="og:image" content={data.frontmatter.socialImage} />
+        <meta name="og:type" content="website" />
+        {/* Twitter Card tags */}
+        <meta name="twitter:title" content={data.frontmatter.title} />
+        <meta name="twitter:description" content={data.frontmatter.subtitle} />
+        <meta name="twitter:image" content={data.frontmatter.socialImage} />
+        <meta name="twitter:card" content="summary" />
+      </Head>
+      <Section>
+        <article className="mb-10 markdown">
+          <header>
+            <h1 className="text-5xl">{data.frontmatter.title}</h1>
+          </header>
+          <div className="mb-5 my-auto text-sm font-semibold text-neutral-400">
+              {reformatDate(data.frontmatter.date)}
             </div>
-          </article>
-          <Newsletter/><br/><br/>
-          <Hyvor websiteId={262} />
-        </Section>
-      </Layout>
-    </Tina>
+          <div>
+            <ReactMarkdown 
+              source={data.markdownBody}
+              renderers={{
+                code: CodeBlock
+              }}
+            />
+          </div>
+        </article>
+        <Newsletter/><br/><br/>
+        <Hyvor websiteId={262} />
+      </Section>
+    </Layout>
   )
 };
 
@@ -140,15 +147,17 @@ BlogTemplate.getInitialProps = async ctx => {
   //gray-matter parses the yaml frontmatter from the md body
   const result = matter(content.default)
   return {
-    result: {
-      content: result.content,
-      data: {
-        url: `https://raskin.me/blog/${blogPost}`,
-        title: result.data.title,
-        date: result.data.date,
-        subtitle: result.data.subtitle,
-        socialImage: result.data.socialImage
-      }
+    markdownFile: {
+      fileRelativePath: `../../posts/${blogPost}.md`,
+      frontmatter: result.data,
+      markdownBody: result.content,
+      // data: {
+      //   url: `https://raskin.me/blog/${blogPost}`,
+      //   title: result.data.title,
+      //   date: result.data.date,
+      //   subtitle: result.data.subtitle,
+      //   socialImage: result.data.socialImage
+      // }
     }
   }
 }

@@ -1,5 +1,8 @@
 import App from 'next/app';
 import * as React from 'react';
+import { Tina, TinaCMS } from 'tinacms';
+import { GitClient, GitMediaStore } from '@tinacms/git-client';
+
 import '../styles/tailwind.css';
 
 interface AppState {
@@ -26,8 +29,15 @@ class MyApp extends App<{}, {}, AppState> {
 
   render() {
     const { Component, pageProps } = this.props;
+
+    const cms = new TinaCMS({});
+    const client = new GitClient('http://localhost:3000/___tina');
+    cms.registerApi('git', client);
+    cms.media.store = new GitMediaStore(client);
     return (
-      <Component {...pageProps} />
+      <Tina cms={cms}>
+        <Component {...pageProps} />
+      </Tina>
     );
   }
 }
