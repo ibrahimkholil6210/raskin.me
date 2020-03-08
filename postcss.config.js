@@ -6,7 +6,9 @@ const cssnano = require('cssnano')({
 const purgecss = require('@fullhuman/postcss-purgecss')({
   content: [
     './pages/**/*.tsx',
+    './public/index.html',
     './components/**/*.tsx',
+    './components/**/*.jsx',
     './styles/tailwind.css'
   ],
   css: [
