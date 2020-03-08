@@ -4,13 +4,10 @@ import matter from 'gray-matter';
 import styled from 'styled-components';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
-<<<<<<< HEAD
 import { Tina, TinaCMS } from 'tinacms';
-=======
 import Hyvor from '../../components/Hyvor';
 
 import Highlight from 'react-highlight';
->>>>>>> 5fce2a271fbaa4a2bd2ccadf70f934a98f2f575c
 
 import Layout from '../../components/Layout';
 import Section from '../../components/Section';
@@ -88,44 +85,46 @@ const BlogTemplate: NextPage<BlogTemplateProps> = ({ result }) => {
   var reactElement = converter.convert(markdownBody);
   const cms = new TinaCMS({});
   return (
-    <Layout>
-      <Head>
-        {/* General tags */}
-        <meta name="description" content={frontmatter.subtitle}/>
-        <title>{frontmatter.title}</title>
-        {/* OpenGraph tags */}
-        <meta name="og:url" content={frontmatter.url} />
-        <meta name="og:title" content={frontmatter.title} />
-        <meta name="og:description" content={frontmatter.subtitle} />
-        <meta name="og:image" content={frontmatter.socialImage} />
-        <meta name="og:type" content="website" />
-        {/* Twitter Card tags */}
-        <meta name="twitter:title" content={frontmatter.title} />
-        <meta name="twitter:description" content={frontmatter.subtitle} />
-        <meta name="twitter:image" content={frontmatter.socialImage} />
-        <meta name="twitter:card" content="summary" />
-      </Head>
-      <Section>
-        <article className="mb-10 markdown">
-          <header>
-            <h1 className="text-5xl">{frontmatter.title}</h1>
-          </header>
-          <div className="mb-5 my-auto text-sm font-semibold text-neutral-400">
-              {reformatDate(frontmatter.date)}
+    <Tina cms={cms}>
+      <Layout>
+        <Head>
+          {/* General tags */}
+          <meta name="description" content={frontmatter.subtitle}/>
+          <title>{frontmatter.title}</title>
+          {/* OpenGraph tags */}
+          <meta name="og:url" content={frontmatter.url} />
+          <meta name="og:title" content={frontmatter.title} />
+          <meta name="og:description" content={frontmatter.subtitle} />
+          <meta name="og:image" content={frontmatter.socialImage} />
+          <meta name="og:type" content="website" />
+          {/* Twitter Card tags */}
+          <meta name="twitter:title" content={frontmatter.title} />
+          <meta name="twitter:description" content={frontmatter.subtitle} />
+          <meta name="twitter:image" content={frontmatter.socialImage} />
+          <meta name="twitter:card" content="summary" />
+        </Head>
+        <Section>
+          <article className="mb-10 markdown">
+            <header>
+              <h1 className="text-5xl">{frontmatter.title}</h1>
+            </header>
+            <div className="mb-5 my-auto text-sm font-semibold text-neutral-400">
+                {reformatDate(frontmatter.date)}
+              </div>
+            <div>
+              <ReactMarkdown 
+                source={markdownBody}
+                renderers={{
+                  code: CodeBlock
+                }}
+              />
             </div>
-          <div>
-            <ReactMarkdown 
-              source={markdownBody}
-              renderers={{
-                code: CodeBlock
-              }}
-            />
-          </div>
-        </article>
-        <Newsletter/><br/><br/>
-        <Hyvor websiteId={262} />
-      </Section>
-    </Layout>
+          </article>
+          <Newsletter/><br/><br/>
+          <Hyvor websiteId={262} />
+        </Section>
+      </Layout>
+    </Tina>
   )
 };
 
