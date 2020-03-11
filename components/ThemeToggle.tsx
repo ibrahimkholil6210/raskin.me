@@ -1,6 +1,8 @@
 import { NextPage } from 'next';
 import { Moon, Sun } from "react-feather";
 
+import { parseCookies, setCookie, destroyCookie } from 'nookies';
+
 interface ThemeToggleProps {
   userAgent?: string;
   data?: Object;
@@ -10,12 +12,17 @@ const ThemeToggle: NextPage<ThemeToggleProps> = ({}) => {
   var setTheme = (theme: string): void => {
     const htmlSelector = document.querySelector("html");
 
+    var expires = new Date();
+    expires.setFullYear(expires.getFullYear() + 1000);
+
     if (theme === 'light') {
-      window.localStorage.setItem('THEME', 'light');
+      setCookie({}, "THEME", "light", {expires: expires, path: "/"});
+      // window.localStorage.setItem('THEME', 'light');
       htmlSelector?.classList.remove('mode-dark');
     }
     else {
-      window.localStorage.setItem('THEME', 'dark');
+      setCookie({}, "THEME", "dark", {expires: expires, path: "/"});
+      // window.localStorage.setItem('THEME', 'dark');
       htmlSelector?.classList.add('mode-dark');
     }
   }
